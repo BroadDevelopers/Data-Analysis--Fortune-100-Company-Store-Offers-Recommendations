@@ -1,0 +1,86 @@
+- we are trying to see how well these stores are doing
+so the first thing we should look at is the offers and sales associated with those offers
+the offers are : Chicken sales, Pizza sales, Bean To Cup Sales,Frozen Yogurt sales and Door Dash Sales
+in these offers we have some null values and empty spaces.
+- We also need to evaluate for the stores:
+Not all the stores are open for the same list of time
+so it probably better to create some sort of an avarage of the days open and the sales.
+and we would divide by the sales by the number of days open to give us, to get a uniform normalized way of looking at
+the data.
+on chicken values we will them with zeros because they are the days we were not selling.
+then we would need to group by our store or location type, to understand how those offers are doing.
+Create a mix of those offers by adding them together, and dividing each by tottal to get the proportion of each of the mixtures
+
+
+-> Heading To Power Query(Data Transformation)
+Data->from table-> this will bring us to power query which will make us manipulate the data in a model
+in "store type", we had 5.5, and we have 6K so we sould change that, so that we can tell our manager
+so that they can tell us if it was the right approach or not.
+1-highlight the "store type"->transform->replace values->replace 6K with 5.5K
+or use formulae in fx= Table.ReplaceValue(#"Changed Type","6 K","5.5 K",Replacer.ReplaceText,{"Store Type"})
+2-Hanadling null values- Highlight last coloumn to the first integer coloumn(data store column)
+replace value->null with zero(0)
+-Rename the table on queries as "our clean table"
+
+-Now we want to add our rate columns to our table, this is easier to do in excel tab, but we are going to do them in
+power query
+-duplicate the table, rename the duplicate to "Rate table"
+remove store name and number,
+we are going to take all of our amount and divide by the days the store is open by creating new coloumns
+-add custom coloumn->[Inside Sales]/[Days Store Open]- Inside Sales Per day
+-add custom coloumn->[Hot Food Sales]/[Days Store Open]- Hot Food Sales Per Day, do this up until door dash
+-delete tables we dont need- "Inside sales" to "Door Dash Sales"
+Close and Load
+
+- we are now going to create pivot tables in our queries(Tables)
+double click on one of the tables-> go to rate table
+we want to get some queries based on our queries-> we ant to group according to the store type
+-we want to know overall average store perday for "store type"
+->select group by(home tab)->advanced,store type-new coloumn name:days open, operation:average,Coloumn name:days store open
+do for everything- up to doordash
+advanced let us have more aggregations
+close and load
+
+Now that we have offers that are segmented by the store type,
+lets start to create our offer mix by creating a new tab and copying the avg offers(pvot 1 ) to the new table and start our calculatons
+we know that the sum of  each one of these rows is going to be all of the offers in the row
+-so we want to divide each one of these offers by the sum to get their propotion.
+=D5/SUM(D5:H5)
+if we want to drag to the row, we put a dolla sign on the above value and drag the row
+fx=D5/SUM($D5:$H5)
+this should ggive us offer mix-so these should equal one hundred as they are proportions of each other
+sum of each one of these rows should be 1(100%)
+-now we need to highlight our offers and change to %-how->&
+
+now we can answer our question.
+which is: what are the offers that we could use at each one of these store types
+-we have historical data to use that off and all we need to do is write up a summary of these offer mixes and
+we should be able to answer ourr first question
+-Select all the offers percentage->insert->recommended charts->column chart
+
+The problem with the chart is that we see offer mixes instead of store type so what we need to do is unpivot the data
+we need to switch from column to row
+so we are going to: Go back to power query and go to data->from table range-powerquery opens
+power query->renema on quries to "unpivot"->
+go to "Transform"->select coloumns we want to inpivot(offers from chicken to doordsh)unpivot coloumns->
+rename attribute-> Offer,value->Percentage(This is how we narrow our data opposed to making it wide as in multiple coloumns)
+copy the unpivot table on the same query
+Create a pivot chart based on the unpivot table
+
+go to insert->pivot chart->new work_sheet
+sheet6->
+take percentage->values
+store type->axis
+offer->Legend
+
+we built our recommendations.
+
+-now we are going to copy our  Rate table onto a new sheet to form a correlation.
+using corrrel fuction, to correlate inside guest count per day and our offers
+
+
+"""""??????NOW WE ARE MOVING TO POWER BI """"""""??????????
+
+
+
+
